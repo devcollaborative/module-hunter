@@ -70,11 +70,11 @@ if (empty($filtered_site_list)) {
 foreach($filtered_site_list as $site) {
   echo "Checking $site:\n";
 
-  $active_modules_raw = shell_exec("terminus drush $site.live -- pml --status=enabled --format=json");
-  if (strpos($active_modules_raw, '{') == 0) {
-    $active_modules = json_decode($active_modules_raw);
+  $active_modules = eval("return " . shell_exec("terminus drush $site.live -- pml --status=enabled --format=var_export") . ';');
 
-    if (isset($active_modules->$module)) {
+  if (is_array($active_modules)) {
+
+    if (isset($active_modules[$module])) {
     echo "$module FOUND.\n";
     $results[] = $site;
     } else {
@@ -82,7 +82,6 @@ foreach($filtered_site_list as $site) {
     }
   } else {
     echo "Error getting module data:\n";
-    echo $active_modules_raw;
   }
 
 }
