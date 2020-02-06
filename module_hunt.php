@@ -6,7 +6,7 @@ $step_number = 0;
 $version_input_validation = ['d7', 'd8'];
 $versions_to_search = [];
 $site_list = [];
-$filtered_site_list= [];
+$filtered_sites= [];
 $results = [];
 $drupal_version = null;
 $red = '\033[0;31m';
@@ -43,7 +43,7 @@ function display_step ($step_description) {
   }
 
 display_step('Getting list of pantheon sites.');
-$site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework"'));
+$site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework,plan_name"'));
 
 display_step('Filtering to relevant set of sites');
 
@@ -55,35 +55,37 @@ foreach ($versions_to_search as $key=>$value) {
 
 foreach($site_list as $site) {
   if (in_array($site->framework, $versions_to_search)) {
-    $filtered_site_list[] = $site->name;
+    $filtered_sites[] = $site;
   }
 }
 
-if (empty($filtered_site_list)) {
+if (empty($filtered_sites)) {
   echo 'Sorry, no sites matching your Drupal version parameters found\n';
   exit;
 } else {
-  echo "Found " . count($filtered_site_list) . " sites.\n";
+  echo "Found " . count($filtered_sites) . " sites.\n";
 }
 
 
-foreach($filtered_site_list as $site) {
-  echo "Checking $site:\n";
-
-  $active_modules = eval("return " . shell_exec("terminus drush $site.live -- pml --status=enabled --format=var_export") . ';');
+foreach($filtered_sites as $site) {
+  $env = 'live';
+  echo "Checking $site->name:\n";
+  if ($site->plan_name == "Sandbox") {
+    $env = 'dev';
+  }
+  $active_modules = eval("return " . shell_exec("terminus drush $site->name.$env -- pml --status=enabled --format=var_export") . ';');
 
   if (is_array($active_modules)) {
 
     if (isset($active_modules[$module])) {
     echo "$module FOUND.\n";
-    $results[] = $site;
+    $results[] = $site->name;
     } else {
       echo "not found. \n";
     }
   } else {
     echo "Error getting module data:\n";
   }
-
 }
 
 if (!empty($results)) {
