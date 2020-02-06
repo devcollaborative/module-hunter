@@ -8,9 +8,23 @@ $versions_to_search = [];
 $site_list = [];
 $filtered_sites= [];
 $results = [];
+$error_sites = [];
 $drupal_version = null;
-$red = '\033[0;31m';
-$no_color = '\033[0m';
+$red = "\e[0;31m";
+$green = "\e[0;32m";
+
+function display_step ($step_description) {
+  global $step_number;
+  $step_number += 1;
+  echo $step_number . ') ' . $step_description;
+  echo "\n";
+}
+
+function color_output($color, $text) {
+  return $color . $text . "\033[0m";
+}
+
+
 
 // Read in and validate command line arguements
 if (isset($argv[1])) {
@@ -29,18 +43,11 @@ if (isset($argv[1])) {
     $versions_to_search = $version_input_validation;
   }
 } else {
-  echo "Syntax error: check_modules.php module_name [d8|d7]\n";
+  echo color_output($red, "Syntax error:") .  " module_hunt.php module_name [d8|d7]\n";
   exit;
 }
 
 echo $response . "\n";
-
-function display_step ($step_description) {
-    global $step_number;
-    $step_number += 1;
-    echo $step_number . ') ' . $step_description;
-    echo "\n";
-  }
 
 display_step('Getting list of pantheon sites.');
 $site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework,plan_name,frozen"'));
@@ -60,7 +67,7 @@ foreach($site_list as $site) {
 }
 
 if (empty($filtered_sites)) {
-  echo 'Sorry, no sites matching your Drupal version parameters found\n';
+  echo color_output($red, 'Sorry, no sites matching your Drupal version parameters found\n');
   exit;
 } else {
   echo "Found " . count($filtered_sites) . " sites.\n";
@@ -78,23 +85,23 @@ foreach($filtered_sites as $site) {
   if (is_array($active_modules)) {
 
     if (isset($active_modules[$module])) {
-    echo "$module FOUND.\n";
+    echo color_output($green, "$module FOUND.\n");
     $results[] = $site->name;
     } else {
       echo "not found. \n";
     }
   } else {
-    echo "Error getting module data:\n";
+    echo color_output($red, "Error getting module data:\n");
     $error_sites[] = $site->name;
   }
 }
 
 if (!empty($results)) {
-  echo "\n\n\nSUMMARY: $module appears on the following sites:\n";
+  echo color_output($green, "\n\n\nSUMMARY: $module appears on the following sites:\n");
   echo implode($results, ',') . "\n";
 }
 
 if (!empty($error_sites)) {
-  echo "\n\n\NOTICE: There was a problem checking the following sites:\n";
+  echo color_output($red, "\n\n\NOTICE: There was a problem checking the following sites:\n");
   echo implode($error_sites, ',') . "\n";
 }
