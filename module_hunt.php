@@ -43,7 +43,7 @@ function display_step ($step_description) {
   }
 
 display_step('Getting list of pantheon sites.');
-$site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework,plan_name"'));
+$site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework,plan_name,frozen"'));
 
 display_step('Filtering to relevant set of sites');
 
@@ -54,7 +54,7 @@ foreach ($versions_to_search as $key=>$value) {
 }
 
 foreach($site_list as $site) {
-  if (in_array($site->framework, $versions_to_search)) {
+  if (in_array($site->framework, $versions_to_search) && !$site->frozen) {
     $filtered_sites[] = $site;
   }
 }
