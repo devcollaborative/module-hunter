@@ -3,7 +3,10 @@
 <?php
 
 $step_number = 0;
-$version_input_validation = ['d7', 'd8'];
+$version_input_validation = [
+  'd7' => 'drupal',
+  'd8' => 'drupal8'
+];
 $versions_to_search = [];
 $site_list = [];
 $filtered_sites= [];
@@ -34,10 +37,11 @@ if (isset($argv[1])) {
   if (isset($argv[2])) {
     $drupal_version = $argv[2];
     $response .= " ($drupal_version only.)";
-    $versions_to_search = [$drupal_version];
-    if (!in_array($drupal_version, $version_input_validation)) {
+    if (!isset($version_input_validation[$drupal_version])) {
       echo "Error, $drupal_version not a valid option. Use \"d7,\" \"d8\" or leave blank to search both. \n";
       exit;
+    } else {
+       $versions_to_search[] = $version_input_validation[$drupal_version];
     }
   } else {
     $versions_to_search = $version_input_validation;
@@ -54,11 +58,6 @@ $site_list = json_decode(shell_exec('terminus site:list --format=json --fields="
 
 display_step('Filtering to relevant set of sites');
 
-// Convert the version arguments to what Terminus uses.
-foreach ($versions_to_search as $key=>$value) {
-  if ($value == 'd7') {$versions_to_search[$key] = 'drupal';}
-  if ($value == 'd8') {$versions_to_search[$key] = 'drupal8';}
-}
 
 foreach($site_list as $site) {
   if (in_array($site->framework, $versions_to_search) && !$site->frozen) {
@@ -67,7 +66,7 @@ foreach($site_list as $site) {
 }
 
 if (empty($filtered_sites)) {
-  echo color_output($red, 'Sorry, no sites matching your Drupal version parameters found\n');
+  echo color_output($red, "Sorry, no sites matching your Drupal version parameters found\n");
   exit;
 } else {
   echo "Found " . count($filtered_sites) . " sites.\n";
