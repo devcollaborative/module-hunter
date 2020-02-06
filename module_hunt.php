@@ -85,10 +85,16 @@ foreach($filtered_sites as $site) {
     }
   } else {
     echo "Error getting module data:\n";
+    $error_sites[] = $site->name;
   }
 }
 
 if (!empty($results)) {
   echo "\n\n\nSUMMARY: $module appears on the following sites:\n";
   echo implode($results, ',') . "\n";
+}
+
+if (!empty($error_sites)) {
+  echo "\n\n\NOTICE: There was a problem checking the following sites:\n";
+  echo implode($error_sites, ',') . "\n";
 }
