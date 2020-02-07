@@ -2,20 +2,29 @@
 
 <?php
 
-$step_number = 0;
-$version_input_validation = [
+$step_number = 0; // For the step counter display.
+$version_input_validation = [ // key is parameter string, value is pantheon framework string
   'd7' => 'drupal',
   'd8' => 'drupal8'
 ];
-$versions_to_search = [];
-$site_list = [];
-$filtered_sites= [];
-$results = [];
-$error_sites = [];
-$drupal_version = null;
+$versions_to_search = []; // Stores the pantheon framework values to include in the search.
+$site_list = []; // Stores the initial set of all the user's pantheon sites.
+$filtered_sites= []; // Filtered sites based on frozen status and version parameter
+$results = []; // Stores the subset of fitlered sites that have the desinated module
+$error_sites = []; // Stores the subset of filtered sites where the module check failed.
+
+// Color codes
 $red = "\e[0;31m";
 $green = "\e[0;32m";
 
+/**
+ * display_step()
+ * Outputs a numbered description of the current step,
+ * e.g. "1.) Checking for foo"
+ *
+ * @param [string] $step_description Deascription of the step
+ *
+ */
 function display_step ($step_description) {
   global $step_number;
   $step_number += 1;
@@ -28,8 +37,7 @@ function color_output($color, $text) {
 }
 
 
-
-// Read in and validate command line arguements
+// Read in and validate command line arguments
 if (isset($argv[1])) {
   $module = $argv[1];
   $response = "Searching for installed instances of the $module module.";
@@ -41,6 +49,7 @@ if (isset($argv[1])) {
       echo "Error, $drupal_version not a valid option. Use \"d7,\" \"d8\" or leave blank to search both. \n";
       exit;
     } else {
+      //  Add the pantheon framework label to the array.
        $versions_to_search[] = $version_input_validation[$drupal_version];
     }
   } else {
@@ -57,8 +66,6 @@ display_step('Getting list of pantheon sites.');
 $site_list = json_decode(shell_exec('terminus site:list --format=json --fields="name,framework,plan_name,frozen"'));
 
 display_step('Filtering to relevant set of sites');
-
-
 foreach($site_list as $site) {
   if (in_array($site->framework, $versions_to_search) && !$site->frozen) {
     $filtered_sites[] = $site;
@@ -72,17 +79,21 @@ if (empty($filtered_sites)) {
   echo "Found " . count($filtered_sites) . " sites.\n";
 }
 
-
+display_step("Check each site for an active instance of $module.");
+// Check for Sanbox sites -- dev instance should be evaluated for them, since
+// there is no live.
 foreach($filtered_sites as $site) {
   $env = 'live';
   echo "Checking $site->name:\n";
   if ($site->plan_name == "Sandbox") {
     $env = 'dev';
   }
+
+  // Gets array of all active modules.
   $active_modules = eval("return " . shell_exec("terminus drush $site->name.$env -- pml --status=enabled --format=var_export") . ';');
 
   if (is_array($active_modules)) {
-
+    // check the array for the target module.
     if (isset($active_modules[$module])) {
     echo color_output($green, "$module FOUND.\n");
     $results[] = $site->name;
@@ -95,11 +106,13 @@ foreach($filtered_sites as $site) {
   }
 }
 
+// Report all sites with the target module insrtalled.
 if (!empty($results)) {
   echo color_output($green, "\n\n\nSUMMARY: $module appears on the following sites:\n");
   echo implode($results, ',') . "\n";
 }
 
+// Report all sites where the module list could not be obtained.
 if (!empty($error_sites)) {
   echo color_output($red, "\n\n\NOTICE: There was a problem checking the following sites:\n");
   echo implode($error_sites, ',') . "\n";
