@@ -32,6 +32,13 @@ function display_step ($step_description) {
   echo "\n";
 }
 
+/**
+ * color_output()
+ *
+ * @param [string] $color color to use in shading the text.
+ * @param [string] $text Text to color code.
+ * @return void
+ */
 function color_output($color, $text) {
   return $color . $text . "\033[0m";
 }
