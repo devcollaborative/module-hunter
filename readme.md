@@ -17,3 +17,4 @@ This script has thus far proven stable for our use cases, but has not been exten
 ## Todo
 * Support checking for multiple modules.
 * Make this a terminus plug-in instead[?]
+* Instructions for installing this as a global command.
