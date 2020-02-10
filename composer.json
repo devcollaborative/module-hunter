@@ -1,0 +1,21 @@
+{
+  "name": "devcollaborative/module-hunter",
+  "type": "library",
+  "description": "Command line tool to easily search through all your Pantheon-hosted Drupal sites and identify active instances of a particular module.",
+  "keywords": ["terminus", "pantheon", "drupal", "d8", "d7" , "modules", "security"],
+  "license": "MIT",
+  "bin" : [
+    "module-hunt"
+  ],
+  "require": {
+    "pantheon-systems/terminus": "^1.9.0"
+  },
+  "authors": [
+    {
+      "name": "Jeffrey Hipp",
+      "homepage": "https://devcollaborative.com",
+      "role": "Developer",
+      "email": "jeff@devcollaborative.com"
+    }
+  ]
+}
