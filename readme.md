@@ -9,7 +9,7 @@ This command-line tool was created to help developers who maintain a large numbe
 Use this script using the following
 syntax:
 
-`./module_hunt.php module_name [d7|d8]`
+`./module-hunt module_name [d7|d8]`
 
 ## Stability: ALPHA Release
 This script has thus far proven stable for our use cases, but has not been extensively tested.
