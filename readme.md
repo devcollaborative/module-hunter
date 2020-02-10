@@ -9,7 +9,7 @@ This command-line tool was created to help developers who maintain a large numbe
 Use this script using the following
 syntax:
 
-`./module-hunt module_name [d7|d8]`
+`module-hunt module_name [d7|d8]`
 
 ## Sandbox sites supported
 Module Hunter checks for the module on the live environment, except when a site is on a Sandbox plan. In that is the case, Module Hunter instead checks the dev environment.
@@ -17,7 +17,17 @@ Module Hunter checks for the module on the live environment, except when a site 
 ## Stability: ALPHA Release
 This script has thus far proven stable for our use cases, but has not been extensively tested.
 
+## Installation
+### With Composer
+If you use `composer global` to install and maintain php tools and libraries, you may add Module Hunter to your command line via:
+
+`composer global require devcollaborative/module-hunter`
+
+**NOTE: As this library is currently pre-release, your global composer.json must include a [minimum-stability](https://getcomposer.org/doc/04-schema.md#minimum-stability) value of either "alpha" or "dev".**
+
+### Without Composer
+Download/clone this library and append run the command as `./module-hunt`
+
 ## Todo
 * Support checking for multiple modules.
 * Make this a terminus plug-in instead[?]
-* Instructions for installing this as a global command.
