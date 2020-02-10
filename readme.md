@@ -11,6 +11,9 @@ syntax:
 
 `./module-hunt module_name [d7|d8]`
 
+## Sandbox sites supported
+Module Hunter checks for the module on the live environment, except when a site is on a Sandbox plan. In that is the case, Module Hunter instead checks the dev environment.
+
 ## Stability: ALPHA Release
 This script has thus far proven stable for our use cases, but has not been extensively tested.
 
