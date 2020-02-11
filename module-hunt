@@ -10,7 +10,7 @@ $version_input_validation = [ // key is parameter string, value is pantheon fram
 $versions_to_search = []; // Stores the pantheon framework values to include in the search.
 $site_list = []; // Stores the initial set of all the user's pantheon sites.
 $filtered_sites= []; // Filtered sites based on frozen status and version parameter
-$results = []; // Stores the subset of fitlered sites that have the desinated module
+$results = []; // Stores the subset of fitlered sites that have the designated module
 $error_sites = []; // Stores the subset of filtered sites where the module check failed.
 
 // Color codes
@@ -113,7 +113,7 @@ foreach($filtered_sites as $site) {
   }
 }
 
-// Report all sites with the target module insrtalled.
+// Report all sites with the target module installed.
 if (!empty($results)) {
   echo color_output($green, "\n\n\nSUMMARY: $module appears on the following sites:\n");
   echo implode($results, ',') . "\n";
