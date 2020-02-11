@@ -26,7 +26,7 @@ If you use `composer global` to install and maintain php tools and libraries, yo
 **NOTE: As this library is currently pre-release, your global composer.json must include a [minimum-stability](https://getcomposer.org/doc/04-schema.md#minimum-stability) value of either "alpha" or "dev".**
 
 ### Without Composer
-Download/clone this library and append run the command as `./module-hunt`
+Download/clone this library and append run the command from it's parent directory as `./module-hunt`
 
 ## Todo
 * Support checking for multiple modules.
