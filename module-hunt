@@ -116,11 +116,11 @@ foreach($filtered_sites as $site) {
 // Report all sites with the target module installed.
 if (!empty($results)) {
   echo color_output($green, "\n\n\nSUMMARY: $module appears on the following sites:\n");
-  echo implode($results, ',') . "\n";
+  echo implode(',', $results) . "\n";
 }
 
 // Report all sites where the module list could not be obtained.
 if (!empty($error_sites)) {
   echo color_output($red, "\n\n\NOTICE: There was a problem checking the following sites:\n");
-  echo implode($error_sites, ',') . "\n";
+  echo implode(',', $error_sites) . "\n";
 }
