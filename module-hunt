@@ -3,11 +3,7 @@
 <?php
 
 $step_number = 0; // For the step counter display.
-$version_input_validation = [ // key is parameter string, value is pantheon framework string
-  'd7' => 'drupal',
-  'd8' => 'drupal8'
-];
-$versions_to_search = []; // Stores the pantheon framework values to include in the search.
+
 $site_list = []; // Stores the initial set of all the user's pantheon sites.
 $filtered_sites= []; // Filtered sites based on frozen status and version parameter
 $results = []; // Stores the subset of fitlered sites that have the designated module
@@ -49,21 +45,8 @@ if (isset($argv[1])) {
   $module = $argv[1];
   $response = "Searching for installed instances of the $module module.";
 
-  if (isset($argv[2])) {
-    $drupal_version = $argv[2];
-    $response .= " ($drupal_version only.)";
-    if (!isset($version_input_validation[$drupal_version])) {
-      echo "Error, $drupal_version not a valid option. Use \"d7,\" \"d8\" or leave blank to search both. \n";
-      exit;
-    } else {
-      //  Add the pantheon framework label to the array.
-       $versions_to_search[] = $version_input_validation[$drupal_version];
-    }
-  } else {
-    $versions_to_search = $version_input_validation;
-  }
 } else {
-  echo color_output($red, "Syntax error:") .  " module_hunt.php module_name [d8|d7]\n";
+  echo color_output($red, "Syntax error:") .  " module-hunt [module_name] \n";
   exit;
 }
 
@@ -74,7 +57,8 @@ $site_list = json_decode(shell_exec('terminus site:list --format=json --fields="
 
 display_step('Filtering to relevant set of sites');
 foreach($site_list as $site) {
-  if (in_array($site->framework, $versions_to_search) && !$site->frozen) {
+  if ($site->framework == "drupal8"
+  && !$site->frozen) {
     $filtered_sites[] = $site;
   }
 }
