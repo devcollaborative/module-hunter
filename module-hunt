@@ -1,5 +1,4 @@
-#!/usr/bin/php -q
-
+#!/usr/bin/env php
 <?php
 
 $step_number = 0; // For the step counter display.
