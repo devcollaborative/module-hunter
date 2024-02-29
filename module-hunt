@@ -39,11 +39,13 @@ function color_output($color, $text) {
   return $color . $text . "\033[0m";
 }
 
+$modules = $argv;
+array_shift($modules);  //drop the first argument (script name)
 
 // Read in and validate command line arguments
-if (isset($argv[1])) {
-  $module = $argv[1];
-  $response = "Searching for installed instances of the $module module.";
+if (!empty($modules)) {
+  $response = "Searching for installed instances of the following modules: "
+    . implode(', ', $modules);
 
 } else {
   echo color_output($red, "Syntax error:") .  " module-hunt [module_name] \n";
@@ -70,7 +72,7 @@ if (empty($filtered_sites)) {
   echo "Found " . count($filtered_sites) . " sites.\n";
 }
 
-display_step("Check each site for an active instance of $module.");
+display_step("Checking each site for the designated module(s).");
 // Check for Sanbox sites -- dev instance should be evaluated for them, since
 // there is no live.
 foreach($filtered_sites as $site) {
@@ -86,11 +88,13 @@ foreach($filtered_sites as $site) {
   // An inability to get the module result will result in ["0" => ""]
   if (!empty($active_modules[0])) {
     // check the array for the target module.
-    if (array_search($module, $active_modules)) {
-    echo color_output($green, "$module FOUND.\n");
-    $results[] = $site->name;
-    } else {
-      echo "not found. \n";
+    foreach ($modules as $module) {
+      if (array_search($module, $active_modules)) {
+        echo color_output($green, "$module FOUND.\n");
+        $results[$module][] = $site->name;
+      } else {
+        echo "$module not found. \n";
+      }
     }
   } else {
     echo color_output($red, "Error getting module data:\n");
@@ -100,12 +104,17 @@ foreach($filtered_sites as $site) {
 
 // Report all sites with the target module installed.
 if (!empty($results)) {
-  echo color_output($green, "\n\n\nSUMMARY: $module appears on the following sites:\n");
-  echo implode(',', $results) . "\n";
+  echo color_output($green, "\n\n\nSUMMARY:\n");
+  foreach($results as $module => $module_results) {
+    echo color_output($green, "\n$module appears on the following sites:\n");
+    echo implode(',', $module_results) . "\n";
+  }
+
+  echo("\n");
 }
 
 // Report all sites where the module list could not be obtained.
 if (!empty($error_sites)) {
-  echo color_output($red, "\n\n\NOTICE: There was a problem checking the following sites:\n");
+  echo color_output($red, "\n\nNOTICE: There was a problem checking the following sites:\n");
   echo implode(',', $error_sites) . "\n";
 }
