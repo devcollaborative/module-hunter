@@ -97,11 +97,12 @@ foreach($filtered_sites as $site) {
   }
 
   // Gets array of all active modules.
-  $active_modules = eval("return " . shell_exec("terminus drush $site->name.$env -- pml --status=enabled --format=var_export") . ';');
+  $active_modules = explode("\n", shell_exec("terminus drush $site->name.$env -- pml --status=enabled --format=string --field=name"));
 
-  if (is_array($active_modules)) {
+  // An inability to get the module result will result in ["0" => ""]
+  if (!empty($active_modules[0])) {
     // check the array for the target module.
-    if (isset($active_modules[$module])) {
+    if (array_search($module, $active_modules)) {
     echo color_output($green, "$module FOUND.\n");
     $results[] = $site->name;
     } else {
