@@ -92,7 +92,6 @@ foreach($filtered_sites as $site) {
     }
   }
 
-
 }
 
 // Report all sites with the target module installed.
